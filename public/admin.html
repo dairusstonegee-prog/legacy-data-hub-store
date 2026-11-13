@@ -1,0 +1,24 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin – Legacy Data Hub</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>body{font-family:system-ui,sans-serif;background:#04243f;color:#fff}.g{background:rgba(255,255,255,.1);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.3);border-radius:18px;padding:14px}
+button{padding:6px 12px;border-radius:10px;background:rgba(14,165,233,.4);border:1px solid #7dd3fc}button.y{background:rgba(250,204,21,.4);border-color:#facc15}input{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);border-radius:8px;padding:4px 8px;width:90px;color:#fff}td,th{padding:6px;text-align:left}select{background:#12141c;color:#fff;border:1px solid #facc15;border-radius:8px;padding:4px 8px}</style></head><body class="p-4 max-w-6xl mx-auto space-y-4">
+<h1 class="text-2xl font-bold">Admin</h1><div class="grid grid-cols-3 gap-3 text-center" id="stats"></div>
+<div class="g overflow-x-auto"><h2 class="font-bold mb-2">Orders</h2><table class="w-full text-sm" id="orders"></table></div>
+<div class="g overflow-x-auto"><h2 class="font-bold mb-2">Inventory &amp; prices</h2><div id="nets" class="flex gap-2 mb-2"></div><table class="w-full text-sm" id="bundles"></table>
+<form id="add" class="flex flex-wrap gap-2 mt-3"><input name="network" placeholder="Network"><input name="size" placeholder="5GB"><input name="price" placeholder="Retail"><input name="reseller_price" placeholder="Reseller"><button class="y">Add bundle</button></form></div>
+<script>
+let T=sessionStorage.tok||prompt('Admin token');sessionStorage.tok=T;
+const api=(u,m='GET',b)=>fetch(u,{method:m,headers:{'Content-Type':'application/json','x-admin-token':T},body:b&&JSON.stringify(b)}).then(async r=>{const j=await r.json();if(!r.ok){sessionStorage.removeItem('tok');alert(j.error);throw 0}return j});
+const num=v=>v===''||v==null?null:Number(v);
+async function load(){const[o,b]=await Promise.all([api('/api/admin/orders'),api('/api/bundles')]);
+ const paid=o.reduce((s,x)=>s+Number(x.amount),0),pend=o.filter(x=>x.status!='Delivered').length,dl=o.length-pend;
+ stats.innerHTML=`<div class="g">Revenue<br><b>GH₵${paid.toFixed(2)}</b></div><div class="g">Pending<br><b>${pend}</b></div><div class="g">Delivered<br><b>${dl}</b></div>`;
+ orders.innerHTML='<tr><th>Time<th>Phone<th>Bundle<th>Amount<th>Tier<th>Status</tr>'+o.map(x=>`<tr><td>${new Date(x.created_at).toLocaleString('en-GB',{timeZone:'Africa/Accra'})}<td><button onclick="navigator.clipboard.writeText('${x.phone}')">${x.phone} copy</button><td>${x.network} ${x.size}<td>${x.amount}<td>${x.tier}<td><select onchange="setSt('${x.id}',this.value)">${['Processing','Delivered','First Time Buyer'].map(s=>`<option ${s==x.status?'selected':''}>${s}</option>`).join('')}</select></tr>`).join('');
+ nets.innerHTML=[...new Set(b.map(x=>x.network))].map(n=>`<button onclick="net('${n}',true)">${n}: all in stock</button><button onclick="net('${n}',false)">${n}: all out</button>`).join('');
+ bundles.innerHTML='<tr><th>Bundle<th>Retail<th>Reseller<th>Stock<th></tr>'+b.map(x=>`<tr><td>${x.network} ${x.size}<td><input id="p${x.id}" value="${x.price??''}"><td><input id="r${x.id}" value="${x.reseller_price??''}"><td><button onclick="stock(${x.id},${!x.in_stock})">${x.in_stock?'In Stock':'Out of Stock'}</button><td><button onclick="save(${x.id})">Save</button> <button onclick="del(${x.id})">Remove</button></tr>`).join('')}
+const setSt=async(id,status)=>{await api('/api/admin/orders/'+id,'PATCH',{status});load()},save=async id=>{await api('/api/admin/bundles/'+id,'PATCH',{price:num(document.getElementById('p'+id).value),reseller_price:num(document.getElementById('r'+id).value)});load()},
+stock=async(id,v)=>{await api('/api/admin/bundles/'+id,'PATCH',{in_stock:v});load()},net=async(n,v)=>{await api('/api/admin/network','PATCH',{network:n,in_stock:v});load()},
+del=async id=>{if(confirm('Remove this bundle?')){await api('/api/admin/bundles/'+id,'DELETE');load()}};
+add.onsubmit=async e=>{e.preventDefault();const f=Object.fromEntries(new FormData(add));await api('/api/admin/bundles','POST',{network:f.network.toUpperCase(),size:f.size,price:num(f.price),reseller_price:num(f.reseller_price)});add.reset();load()};
+load();setInterval(load,30000);
+</script></body></html>

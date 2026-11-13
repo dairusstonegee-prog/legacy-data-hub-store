@@ -1,0 +1,100 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Legacy Data Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script><script src="https://js.paystack.co/v1/inline.js"></script>
+<style>
+:root{--gold:#facc15;--teal:#2dd4bf}
+*{font-family:Inter,system-ui,sans-serif}body{margin:0;min-height:100vh;color:#f3f4f6;background:#07080c}
+.btn,.tab,.sz,.pr,h2,h3,header b{font-family:Orbitron,Inter,sans-serif}
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none}main,header,.dock{position:relative;z-index:1}
+.glass{background:rgba(18,20,28,.72);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);border:1px solid rgba(255,255,255,.1);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.blue{background:rgba(20,184,166,.08);border-color:rgba(45,212,191,.4)}.gold{background:rgba(250,204,21,.08);border-color:rgba(250,204,21,.55)}
+.card{transform-style:preserve-3d;transition:transform .15s ease-out,border-color .2s;padding:14px;text-align:center}.card:hover{border-color:var(--gold)}
+.sz{color:var(--gold);font-size:1.25rem;font-weight:700}
+.btn{position:relative;overflow:hidden;cursor:pointer;color:var(--gold);font-weight:700;font-size:13px;padding:10px 18px;border-radius:10px;border:1px solid rgba(250,204,21,.6);background:#12141c;box-shadow:0 4px 0 rgba(120,90,0,.7),0 8px 18px rgba(0,0,0,.5);transition:transform .1s,box-shadow .1s}
+.btn.y{color:#1a1500;border-color:#fde047;background:linear-gradient(180deg,#fde047,#eab308);box-shadow:0 5px 0 #8a6a00,0 8px 22px rgba(250,204,21,.3)}
+.btn.g{color:#04200f;border-color:#4ade80;background:linear-gradient(180deg,#4ade80,#16a34a);box-shadow:0 5px 0 #0b5a28,0 8px 22px rgba(34,197,94,.3)}
+.btn::after{content:"";position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);transition:left .5s}
+.btn:hover::after{left:130%}.btn:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.6)}
+.btn:disabled{opacity:.45;cursor:not-allowed}.btn:focus-visible,input:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+input{width:100%;padding:11px 14px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);color:#fff}input::placeholder{color:rgba(255,255,255,.5)}
+.tab{padding:10px 20px;border-radius:12px;cursor:pointer;border:1px solid rgba(255,255,255,.12);background:rgba(18,20,28,.72);font-weight:700;font-size:13px}.tab.on{background:rgba(250,204,21,.12);border-color:var(--gold);color:var(--gold)}
+.pulse{animation:p 1.6s infinite}@keyframes p{50%{box-shadow:0 0 0 8px rgba(74,222,128,0)}0%{box-shadow:0 0 0 0 rgba(74,222,128,.7)}}
+.oos{opacity:.5}.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25)}
+.st-Processing{background:rgba(250,204,21,.2);border-color:var(--gold);color:var(--gold)}.st-Delivered{background:rgba(74,222,128,.2);border-color:#4ade80;color:#86efac}
+.st-First-Time-Buyer{background:rgba(45,212,191,.2);border-color:#2dd4bf;color:#5eead4}
+.modal{position:fixed;inset:0;z-index:20;display:none;place-items:center;background:rgba(0,0,0,.65);padding:16px}.modal.open{display:grid}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<canvas id="bg"></canvas>
+<header class="p-3 flex flex-wrap items-center gap-3 justify-between">
+ <div><b class="text-xl">Legacy Data Hub</b> <span id="tier" class="badge gold"></span></div>
+ <div class="flex flex-wrap items-center gap-2 text-sm"><span class="glass blue px-3 py-1" id="clock" style="border-radius:999px"></span>
+ <span class="glass px-3 py-1" style="border-radius:999px"><span class="pulse" style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#4ade80"></span> SYSTEM ACTIVE 24/7 – AUTOMATED ORDER QUEUE</span>
+ <button class="btn" id="acct">Log in</button></div></header>
+<main class="max-w-5xl mx-auto p-3 space-y-4">
+ <div class="glass gold p-3 text-center">Orders are processed automatically upon payment. Estimated delivery time: <b>5 to 30 minutes</b>.</div>
+ <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="qa"><button class="btn y" data-go="trk">Track orders</button><button class="btn y" data-go="grid">Buy data</button><a class="btn block text-center" href="https://whatsapp.com/channel/0029VbDh2rf545uocn0qNQ40" target="_blank" rel="noopener">Join channel</a><a class="btn g block text-center" href="https://wa.me/qr/6K7VA4L76JEVA1" target="_blank" rel="noopener">Chat with admin</a></div>
+ <div class="flex gap-2 flex-wrap" id="tabs"></div>
+ <div id="grid" class="grid grid-cols-2 md:grid-cols-4 gap-3" style="perspective:900px"></div>
+ <section id="trk" class="glass p-4 space-y-3"><h2 class="font-bold text-lg">Track your orders</h2>
+  <div class="flex gap-2"><input id="q" placeholder="Phone number or order ID"><button class="btn y" id="find">Find orders</button></div><div id="orders" class="space-y-2 text-sm"></div></section>
+</main>
+<div class="modal" id="mAuth"><form class="glass blue p-5 w-full max-w-sm space-y-3" id="fAuth"><h3 class="font-bold text-lg" id="aTitle"></h3><input id="aName" placeholder="Full name"><input id="aEmail" type="email" placeholder="Email address" required><input id="aPass" type="password" minlength="8" placeholder="Password (8+ characters)" required><p id="aErr" class="text-sm text-yellow-200"></p><div class="flex gap-2"><button class="btn y" id="aGo"></button><button type="button" class="btn" data-x>Cancel</button></div><button type="button" id="aSwap" class="text-sm underline"></button></form></div>
+<div class="modal" id="mPay"><form class="glass blue p-5 w-full max-w-sm space-y-3" id="fPay"><h3 class="font-bold text-lg" id="pTitle"></h3><input id="pPhone" inputmode="numeric" maxlength="10" placeholder="Recipient phone (0241234567)" required><input id="pEmail" type="email" placeholder="Your email" required><p id="pErr" class="text-sm text-yellow-200"></p><div class="flex gap-2"><button class="btn y" id="pBtn">Pay with MoMo / Card</button><button type="button" class="btn" data-x>Cancel</button></div></form></div>
+<div class="modal" id="mDone"><div class="glass gold p-5 max-w-sm text-center space-y-3"><h3 class="font-bold text-lg">Automated Order Queued</h3><p>Delivering in 5–30 mins. Status: <b>Processing</b>. Track it below using your phone number.</p><button class="btn" data-x>Done</button></div></div>
+<div class="dock fixed bottom-3 right-3 z-10 w-72 max-w-[90vw]"><div id="dp" class="glass p-3 mb-2 hidden space-y-2 text-sm"><a class="btn g block text-center" href="https://wa.me/qr/6K7VA4L76JEVA1" target="_blank" rel="noopener">Chat on WhatsApp</a><a class="btn y block text-center" href="https://whatsapp.com/channel/0029VbDh2rf545uocn0qNQ40" target="_blank" rel="noopener">Join WhatsApp Updates Channel</a><div id="chat" class="min-h-[40px]"></div><div class="flex flex-wrap gap-1"><button class="tab" data-a="Orders are delivered within 5–30 minutes after payment. Check status under Track your orders.">Check delivery status</button><button class="tab" data-a="Resellers get discounted tier pricing. Open /reseller to see it.">Reseller access</button></div></div><button class="btn y float-right" id="dt">Support</button></div>
+<script>
+const $=s=>document.querySelector(s),isR=location.pathname.startsWith('/reseller'),fmt=n=>'GH₵'+Number(n).toFixed(2);
+let B=[],net='MTN',cur=null,user=JSON.parse(localStorage.ldhUser||'null'),cfg={};
+$('#tier').textContent=isR?'Reseller':'Customer';
+setInterval(()=>$('#clock').textContent=new Date().toLocaleTimeString('en-GB',{timeZone:'Africa/Accra'})+' GMT',1000);
+const api=(u,o)=>fetch(u,o).then(async r=>{const j=await r.json();if(!r.ok)throw new Error(j.error||'Error');return j});
+const post=(u,b)=>api(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
+const price=b=>isR&&b.reseller_price!=null?b.reseller_price:b.price;
+function render(){const nets=[...new Set(B.map(b=>b.network))];
+ $('#tabs').innerHTML=nets.map(n=>`<button class="tab ${n==net?'on':''}" data-n="${n}">${n}</button>`).join('');
+ $('#grid').innerHTML=B.filter(b=>b.network==net).map(b=>{const off=!b.in_stock||price(b)==null;return `<div class="glass card ${off?'oos':''}"><div class="sz">${b.size}</div><div class="mb-2">${price(b)==null?'Price pending':fmt(price(b))}</div>${off?'<span class="badge">Out of Stock</span>':`<button class="btn y w-full" data-b="${b.id}">Buy</button>`}</div>`}).join('')}
+$('#tabs').onclick=e=>{if(e.target.dataset.n){net=e.target.dataset.n;render()}};
+$('#grid').onclick=e=>{const id=e.target.dataset.b;if(!id)return;cur=B.find(b=>b.id==id);$('#pTitle').textContent=`${cur.network} ${cur.size} – ${fmt(price(cur))}`;$('#pEmail').value=user?.email||'';$('#pErr').textContent='';$('#mPay').classList.add('open')};
+$('#grid').onmousemove=e=>{const c=e.target.closest('.card');if(!c)return;const r=c.getBoundingClientRect();c.style.transform=`rotateY(${((e.clientX-r.left)/r.width-.5)*14}deg) rotateX(${-((e.clientY-r.top)/r.height-.5)*14}deg)`};
+$('#grid').onmouseleave=()=>document.querySelectorAll('.card').forEach(c=>c.style.transform='');
+document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>b.closest('.modal').classList.remove('open'));
+$('#fPay').onsubmit=e=>{e.preventDefault();const phone=$('#pPhone').value.trim(),email=$('#pEmail').value.trim();
+ if(!/^0\d{9}$/.test(phone))return $('#pErr').textContent='Enter a 10-digit Ghana number starting with 0.';
+ if(!cfg.paystackKey)return $('#pErr').textContent='Payments are not configured yet.';
+ PaystackPop.setup({key:cfg.paystackKey,email,amount:Math.round(price(cur)*100),currency:'GHS',ref:'LDH'+Date.now(),channels:['mobile_money','card'],
+  callback:function(r){post('/api/orders/verify',{reference:r.reference,bundle_id:cur.id,phone,email,tier:isR?'reseller':'customer'}).then(()=>{$('#mPay').classList.remove('open');$('#mDone').classList.add('open');$('#q').value=phone;find()}).catch(x=>alert(x.message+' Keep reference '+r.reference+' and contact support.'))},onClose:function(){}}).openIframe()};
+function show(o){$('#orders').innerHTML=o.length?o.map(x=>`<div class="glass p-3 flex justify-between gap-2"><span><b>${x.network} ${x.size}</b> to ${x.phone}<br>${new Date(x.created_at).toLocaleString('en-GB',{timeZone:'Africa/Accra'})} · ${x.reference}</span><span class="badge st-${x.status.replace(/ /g,'-')} self-center">${x.status}</span></div>`).join(''):'No orders found.'}
+async function find(){const q=$('#q').value.trim();if(!q)return;try{show(await api('/api/orders?q='+encodeURIComponent(q)))}catch(e){$('#orders').textContent=e.message}}
+$('#find').onclick=find;
+$('#qa').onclick=e=>{const g=e.target.dataset.go;if(g)document.getElementById(g).scrollIntoView({behavior:'smooth'})};
+function acct(){$('#acct').textContent=user?user.name.split(' ')[0]+' (log out)':'Log in'}
+let mode='login';
+function setMode(m){mode=m;$('#aName').style.display=m=='signup'?'':'none';$('#aName').required=m=='signup';$('#aTitle').textContent=$('#aGo').textContent=m=='signup'?'Create account':'Log in';$('#aSwap').textContent=m=='signup'?'Have an account? Log in':'New here? Create account';$('#aErr').textContent=''}
+$('#aSwap').onclick=()=>setMode(mode=='signup'?'login':'signup');
+$('#acct').onclick=()=>{if(user){user=null;localStorage.removeItem('ldhUser');acct();$('#orders').innerHTML=''}else{setMode('login');$('#mAuth').classList.add('open')}};
+async function mine(){try{show(await api('/api/me/orders',{headers:{Authorization:'Bearer '+user.token}}))}catch(e){user=null;localStorage.removeItem('ldhUser');acct()}}
+$('#fAuth').onsubmit=async e=>{e.preventDefault();try{const r=await post(mode=='signup'?'/api/signup':'/api/login',{name:$('#aName').value,email:$('#aEmail').value,password:$('#aPass').value});user={...r.user,token:r.token};localStorage.ldhUser=JSON.stringify(user);$('#mAuth').classList.remove('open');$('#aPass').value='';acct();mine()}catch(x){$('#aErr').textContent=x.message}};
+$('#dt').onclick=()=>$('#dp').classList.toggle('hidden');
+$('#dp').onclick=e=>{if(e.target.dataset.a)$('#chat').innerHTML+=`<p class="glass p-2 mb-1">${e.target.dataset.a}</p>`};
+(async()=>{acct();cfg=await api('/api/config');B=await api('/api/bundles');render();if(user&&user.token)mine()})();
+// background: dark grid floor, teal particles, gold ring, floating GB tags
+const cv=$('#bg'),cx=cv.getContext('2d'),T=['1GB','2GB','3GB','4GB','5GB','6GB','8GB','10GB','50GB'],still=matchMedia('(prefers-reduced-motion:reduce)').matches;
+let W,H,t=0,mx=0,P=[],D=[];
+function fit(){W=cv.width=innerWidth;H=cv.height=innerHeight}fit();addEventListener('resize',fit);
+for(let i=0;i<14;i++)P.push({x:Math.random(),y:Math.random(),z:Math.random()*.8+.2,t:T[i%T.length]});
+for(let i=0;i<40;i++)D.push({x:Math.random(),y:Math.random(),r:Math.random()*2.5+1,s:Math.random()*.0003+.0001});
+addEventListener('mousemove',e=>mx=e.clientX/innerWidth-.5);
+function grid(){const hy=H*.62;cx.strokeStyle='rgba(45,212,191,.45)';cx.lineWidth=1;
+ for(let i=-20;i<=20;i++){cx.beginPath();cx.moveTo(W/2+i*30,hy);cx.lineTo(W/2+i*(W/8)+mx*60,H);cx.globalAlpha=.5;cx.stroke()}
+ for(let k=0;k<12;k++){const f=((k+t*.01)%12)/12,y=hy+(H-hy)*f*f;cx.beginPath();cx.moveTo(0,y);cx.lineTo(W,y);cx.globalAlpha=.1+.5*f;cx.stroke()}cx.globalAlpha=1}
+function ring(){const m=Math.min(W,H);cx.save();cx.translate(W/2,H*.45);cx.strokeStyle='rgba(250,204,21,.3)';cx.lineWidth=1.2;
+ for(let i=0;i<14;i++){cx.beginPath();cx.ellipse(0,0,m*.3,m*.1+i*6,t*.004+i*.22,0,7);cx.stroke()}cx.restore()}
+(function f(){t++;cx.clearRect(0,0,W,H);grid();ring();
+ for(const d of D){d.y-=d.s;if(d.y<0)d.y=1;cx.fillStyle='rgba(45,212,191,.8)';cx.shadowColor='#2dd4bf';cx.shadowBlur=12;cx.beginPath();cx.arc(d.x*W,d.y*H,d.r,0,7);cx.fill()}
+ cx.shadowBlur=0;
+ for(const p of P){p.y-=.00008*p.z;if(p.y<-.1)p.y=1.05;const x=p.x*W+mx*90*p.z,y=p.y*H,s=.6+.7*p.z;cx.font=`700 ${14*s}px Orbitron,sans-serif`;const w=cx.measureText(p.t).width+22*s,hh=30*s;
+  cx.globalAlpha=.25+.55*p.z;cx.strokeStyle='#facc15';cx.lineWidth=2;cx.fillStyle='rgba(250,204,21,.07)';cx.beginPath();cx.roundRect(x,y,w,hh,8*s);cx.fill();cx.stroke();cx.fillStyle='#facc15';cx.fillText(p.t,x+11*s,y+hh*.68);cx.globalAlpha=1}
+ if(!still)requestAnimationFrame(f)})();
+</script></body></html>
